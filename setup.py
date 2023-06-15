@@ -145,7 +145,9 @@ def get_version():
 
 
 # specify the packages that msl-lab-logger depends on
-install_requires = []
+install_requires = [
+    'msl-equipment @ https://github.com/MSLNZ/msl-equipment/archive/main.tar.gz',
+]
 
 # specify the packages that are needed for running the tests
 tests_require = ['pytest', 'pytest-cov']
