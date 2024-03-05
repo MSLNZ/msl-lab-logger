@@ -1,16 +1,22 @@
-from typing import TypeVar
+from __future__ import annotations
 
-from msl.equipment import Config
+from typing import TypeVar, Sequence
+
+from msl.equipment import Config, EquipmentRecord
 from msl.io import send_email
 
 
 class Validator:
-
+    """
+    A Validator validates the data before the data is inserted into a database.
+    All custom-written validators should inherit from the :class:`.Validator` class
+    and override the :meth:`~.Validator.validate` method.
+    """
     def __init__(self, config: Config, **kwargs) -> None:
         self.config = config
 
-    def validate(self, *data) -> bool:
-        return True
+    def validate(self, data: Sequence[float], record: EquipmentRecord) -> bool:
+        raise NotImplementedError('Subclass should implement this')
 
     def send_email(self,
                    body: str,
@@ -31,6 +37,13 @@ class Validator:
         except Exception as e:
             pass
             # log.exception(e)
+
+    @staticmethod
+    def find(config: Config, name: str, **kwargs) -> Validator:
+        for v in _validators:
+            if v.matches(name):
+                return v.cls(config, **kwargs)
+        raise ValueError(f'Cannot find validator matching {name}')
 
 
 class ValidatorMatcher:
@@ -72,3 +85,5 @@ def validator(name: str):
 
 
 _validators: list[ValidatorMatcher] = []
+
+from .range_checker import ithxWithReset

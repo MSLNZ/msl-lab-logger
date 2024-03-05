@@ -1,28 +1,28 @@
 from __future__ import annotations
 
 import re
-from typing import TypeVar
+from typing import TypeVar, Sequence, TYPE_CHECKING
 
 from msl.equipment import Config
 from msl.equipment import EquipmentRecord
 
-from ..databases import DatabaseTypes
+if TYPE_CHECKING:
+    from ..database import DatabaseTypes
 
 
 class Sensor:
 
-    fields: dict[str, DatabaseTypes] = {}  # column name, data type
-
     def __init__(self, config: Config, record: EquipmentRecord) -> None:
         self.config = config
         self.record = record
-        self.connection = record.connect()
 
-    def acquire(self) -> tuple[float, ...]:
+    @property
+    def fields(self) -> dict[str, DatabaseTypes]:
         raise NotImplementedError('Subclass should implement this')
 
-    def reconnect(self) -> None:
-        raise NotImplementedError('Subclass should implement this')
+    def acquire(self) -> Sequence[float]:
+        raise NotImplementedError('Subclass should implement this, including'
+                                  'connection = self.record.connect()')
 
     @staticmethod
     def find(config: Config, record: EquipmentRecord) -> Sensor:
@@ -83,3 +83,6 @@ def sensor(*, manufacturer: str = None, model: str = None, flags: int = 0):
 
 
 _sensors: list[SensorMatcher] = []
+
+from .ithx import iTHX
+
