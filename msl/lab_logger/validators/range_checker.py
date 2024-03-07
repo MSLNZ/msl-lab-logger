@@ -1,4 +1,4 @@
-from msl.equipment import Config
+from ..sensors import Sensor
 
 from . import Validator
 from . import validator
@@ -9,23 +9,56 @@ from . import validator
 # Validator. For example, to use the ithxRangeChecker validator you could include
 # the following in your config.xml file:
 #
-#   <validator tmax="40" dmax="15">simple-range</validator>
+#   <validator tmax="40" dmax="15">ithx-range-checker</validator>
 #
 # to change the default values to use for the maximum temperature and the
 # maximum dew point.
 
 
-@validator(name='ithx-range-checker')  # existing code uses simple-range
-class ithxRangeChecker(Validator):
+@validator(name='simple-range')
+class simpleRange(Validator):
     """
-    A callback that is used to validate the data. The callback must accept two arguments (data, ithx), where data is a
-    tuple of the temperature, humidity and dewpoint values for each probe and ithx is the iTHX instance (i.e., self).
+    A callback that is used to validate the data. Data is a tuple of values.
     The callback must return a value whose truthness decides whether to insert the data into the database.
     If the returned value evaluates to True then the data is inserted into the database.
     """
+    def __init__(self, sensor: Sensor, vmin=10, vmax=30, **kwargs):
+        super().__init__(sensor, **kwargs)
+        """Validates the data by verifying that it is within a certain range.
 
-    def __init__(self, config, tmin=10, tmax=30, hmin=10, hmax=90, dmin=0, dmax=20, **kwargs):
-        super().__init__(config, **kwargs)
+        Parameters
+        ----------
+        vmin : :class:`float`, optional
+            The minimum value allowed.
+        vmax : :class:`float`, optional
+            The maximum value allowed.
+        kwargs
+            Anything else is ignored.
+        """
+        self.vmin = float(vmin)
+        self.vmax = float(vmax)
+
+    def validate(self, data):
+        for v in data:
+            if not (self.vmin <= v <= self.vmax):
+                self.log_warning(
+                    f'Value of {v} is out of range [{self.vmin}, {self.vmax}] for {self.sensor.record.alias}'
+                )
+                return False
+
+        # the data is okay, return True to insert the data into the database
+        return True
+
+
+@validator(name='ithx-range-checker')  # existing code uses simple-range
+class ithxRangeChecker(Validator):
+    """
+    A callback that is used to validate the data. Data is a tuple of the temperature, humidity and dewpoint values for
+    each probe. The callback must return a value whose truthness decides whether to insert the data into the database.
+    If the returned value evaluates to True then the data is inserted into the database.
+    """
+    def __init__(self, sensor: Sensor, tmin=10, tmax=30, hmin=10, hmax=90, dmin=0, dmax=20, **kwargs):
+        super().__init__(sensor, **kwargs)
         """Validates the data by verifying that it is within a certain range.
 
         Parameters
@@ -52,7 +85,7 @@ class ithxRangeChecker(Validator):
         self.dmin = float(dmin)
         self.dmax = float(dmax)
 
-    def validate(self, data, ithx):
+    def validate(self, data):
         if len(data) == 3:
             t1, h1, d1 = data
             temperatures = [t1]
@@ -66,22 +99,22 @@ class ithxRangeChecker(Validator):
 
         for t in temperatures:
             if not (self.tmin <= t <= self.tmax):
-                ithx.log_warning(
-                    f'Temperature value of {t} is out of range [{self.tmin}, {self.tmax}]'
+                self.log_warning(
+                    f'Temperature value of {t} is out of range [{self.tmin}, {self.tmax}] for {self.sensor.record.alias}'
                 )
                 return False
 
         for h in humidities:
             if not (self.hmin <= h <= self.hmax):
-                ithx.log_warning(
-                    f'Humidity value of {h} is out of range [{self.hmin}, {self.hmax}]'
+                self.log_warning(
+                    f'Humidity value of {h} is out of range [{self.hmin}, {self.hmax}] for {self.sensor.record.alias}'
                 )
                 return False
 
         for d in dewpoints:
             if not (self.dmin <= d <= self.dmax):
-                ithx.log_warning(
-                    f'Dewpoint value of {d} is out of range [{self.dmin}, {self.dmax}]'
+                self.log_warning(
+                    f'Dewpoint value of {d} is out of range [{self.dmin}, {self.dmax}] for {self.sensor.record.alias}'
                 )
                 return False
 
@@ -92,8 +125,8 @@ class ithxRangeChecker(Validator):
 @validator(name='ithx-with-reset')
 class ithxWithReset(Validator):
 
-    def __init__(self, config, reset_criterion=5, **kwargs):
-        super().__init__(config, **kwargs)
+    def __init__(self, sensor: Sensor, reset_criterion=5, **kwargs):
+        super().__init__(sensor, **kwargs)
         """Reset the iServer after a certain number of invalid data values.
 
         Parameters
@@ -108,20 +141,21 @@ class ithxWithReset(Validator):
         self.counter = 0
         self.reset_criterion = int(reset_criterion)
 
-        self.simplerange = ithxRangeChecker(**kwargs)
+        self.simplerange = ithxRangeChecker(sensor, **kwargs)
 
-    def validate(self, data, ithx):
+    def validate(self, data):
 
-        if self.simplerange.validate(data, ithx):
+        if self.simplerange.validate(data):
             return True
 
         self.counter += 1
 
         if self.counter >= self.reset_criterion:
-            ithx.log_warning(
-                f'The Omega iServer will reset due to {self.reset_criterion} bad readings.'
+            self.log_warning(
+                f'The {self.sensor.record.alias} Omega iServer will reset due to {self.reset_criterion} bad readings.'
             )
-            ithx.reset(wait=True, password=None, port=2002, timeout=10)
+            with self.sensor.record.connect() as cxn:
+                cxn.reset(wait=True, password=None, port=2002, timeout=10)
             self.counter = 0
 
         return False

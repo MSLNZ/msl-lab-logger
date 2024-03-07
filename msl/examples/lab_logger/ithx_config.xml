@@ -4,85 +4,17 @@
     <log_dir timeout="10">C:\Users\rebecca.hawke\Desktop\OmegaData</log_dir>
 
     <!-- Optional: The number of seconds to wait between logging events. -->
-    <wait>20</wait>
+    <wait>10</wait>
 
     <validators>
-        <validator tmin="10" tmax="30" hmin="10" hmax="90" dmin="0" dmax="20" reset_criterion="2">ithx-with-reset</validator>
+        <validator tmin="10" tmax="30" hmin="10" hmax="90" dmin="0" dmax="20" reset_criterion="3">ithx-with-reset</validator>
+        <validator tmin="10" tmax="30" hmin="10" hmax="90" dmin="0" dmax="20">ithx-range-checker</validator>
     </validators>
 
     <serials>
         7410664
         8060940
     </serials>
-
-    <calibrations>
-        <!-- the coefficients value equals the polynomial coefficients c0;c1;c2;c3;... -->
-        <omega serial="7410664">
-            <report component="Probe 1" date="2020-12-07" number="Humidity/2020/494">
-                <!-- Currently mass 1 probe 1 is SN 0801-->
-                <start_date>2020-12-04</start_date>
-                <end_date>2020-12-07</end_date>
-                <coverage_factor>2.0</coverage_factor>
-                <confidence>95%</confidence>
-                <temperature units="C" min="15" max="30">
-                    <coefficients>0.46;-0.023</coefficients>
-                    <expanded_uncertainty>0.11</expanded_uncertainty>
-                </temperature>
-                <humidity units="%rh" min="30" max="80">
-                    <coefficients>-2.58;-0.0626;0.000976</coefficients>
-                    <expanded_uncertainty>0.8</expanded_uncertainty>
-                </humidity>
-            </report>
-            <report component="Probe 2" date="2020-12-07" number="Humidity/2020/493">
-                <!-- Currently mass 1 probe 2 is SN 0804-->
-                <start_date>2020-12-04</start_date>
-                <end_date>2020-12-07</end_date>
-                <coverage_factor>2.0</coverage_factor>
-                <confidence>95%</confidence>
-                <temperature units="C" min="15" max="30">
-                    <coefficients>-0.27;-0.012</coefficients>
-                    <expanded_uncertainty>0.11</expanded_uncertainty>
-                </temperature>
-                <humidity units="%rh" min="30" max="80">
-                    <coefficients>-4.34;-0.0374;0.001016</coefficients>
-                    <expanded_uncertainty>0.8</expanded_uncertainty>
-                </humidity>
-            </report>
-        </omega>
-
-        <omega serial="8060940">
-            <report component="Probe 1" date="2020-12-07" number="Humidity/2020/495">
-                <!-- Currently mass 2 probe 1 is SN 0803-->
-                <start_date>2020-12-04</start_date>
-                <end_date>2020-12-07</end_date>
-                <coverage_factor>2.0</coverage_factor>
-                <confidence>95%</confidence>
-                <temperature units="C" min="15" max="30">
-                    <coefficients>-0.29</coefficients>
-                    <expanded_uncertainty>0.11</expanded_uncertainty>
-                </temperature>
-                <humidity units="%rh" min="30" max="80">
-                    <coefficients>-1.85;-0.0767;0.001029</coefficients>
-                    <expanded_uncertainty>0.9</expanded_uncertainty>
-                </humidity>
-            </report>
-            <report component="Probe 2" date="2020-12-07" number="Humidity/2020/492">
-            <!-- Currently mass 2 probe 2 is SN 0802-->
-                <start_date>2020-12-04</start_date>
-                <end_date>2020-12-07</end_date>
-                <coverage_factor>2.0</coverage_factor>
-                <confidence>95%</confidence>
-                <temperature units="C" min="15" max="30">
-                    <coefficients>0.14;-0.021</coefficients> <!-- Powers 0 and 1 T -->
-                    <expanded_uncertainty>0.11</expanded_uncertainty>
-                </temperature>
-                <humidity units="%rh" min="30" max="80">
-                    <coefficients>-3.23;-0.0124;0.000559</coefficients> <!-- Powers 0, 1, 2 RH etc -->
-                    <expanded_uncertainty>0.9</expanded_uncertainty>
-                </humidity>
-            </report>
-        </omega>
-    </calibrations>
 
     <registers>
         <register>

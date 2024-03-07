@@ -1,9 +1,7 @@
 from enum import Enum
 import os
 import sqlite3
-from typing import TypeVar, Sequence
-
-from msl.equipment import Config
+from typing import Sequence
 
 from .sensors import Sensor
 
@@ -21,10 +19,11 @@ class DatabaseTypes(Enum):
 
 class Database:
 
-    def __init__(self, cfg: Config, sensor: Sensor) -> None:
+    def __init__(self, sensor: Sensor) -> None:
         """
         Initialise two tables: one for data and one for metadata
         """
+        cfg = sensor.config
         self.path = os.path.join(cfg.value('log_dir'), f'{sensor.record.serial}.sqlite3')
         self.timeout = cfg.value('db_timeout', 10)
 

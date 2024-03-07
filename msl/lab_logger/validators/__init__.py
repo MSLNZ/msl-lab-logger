@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from typing import TypeVar, Sequence
 
-from msl.equipment import Config, EquipmentRecord
 from msl.io import send_email
+
+from ..sensors import Sensor
+from ..log import logger
 
 
 class Validator:
@@ -12,10 +14,13 @@ class Validator:
     All custom-written validators should inherit from the :class:`.Validator` class
     and override the :meth:`~.Validator.validate` method.
     """
-    def __init__(self, config: Config, **kwargs) -> None:
-        self.config = config
+    name = ""
 
-    def validate(self, data: Sequence[float], record: EquipmentRecord) -> bool:
+    def __init__(self, sensor: Sensor, **kwargs) -> None:
+        self.config = sensor.config
+        self.sensor = sensor
+
+    def validate(self, data: Sequence[float], ) -> bool:
         raise NotImplementedError('Subclass should implement this')
 
     def send_email(self,
@@ -35,15 +40,56 @@ class Validator:
         try:
             send_email(settings, recipients, sender=None, subject=subject, body=body)
         except Exception as e:
-            pass
-            # log.exception(e)
+            logger.exception(e)
 
     @staticmethod
-    def find(config: Config, name: str, **kwargs) -> Validator:
+    def find(sensor: Sensor, name: str, **kwargs) -> Validator:
         for v in _validators:
             if v.matches(name):
-                return v.cls(config, **kwargs)
+                val = v.cls(sensor, **kwargs)
+                val.name = name
+                return val
         raise ValueError(f'Cannot find validator matching {name}')
+
+    @staticmethod
+    def log_debug(msg, *args, **kwargs):
+        """Log a debug message.
+
+        All input parameters are passed to :meth:`~logging.Logger.debug`.
+        """
+        logger.debug(msg, *args, **kwargs)
+
+    @staticmethod
+    def log_info(msg, *args, **kwargs):
+        """Log an info message.
+
+        All input parameters are passed to :meth:`~logging.Logger.info`.
+        """
+        logger.info(msg, *args, **kwargs)
+
+    @staticmethod
+    def log_warning(msg, *args, **kwargs):
+        """Log a warning message.
+
+        All input parameters are passed to :meth:`~logging.Logger.warning`.
+        """
+        logger.warning(msg, *args, **kwargs)
+
+    @staticmethod
+    def log_error(msg, *args, **kwargs):
+        """Log an error message.
+
+        All input parameters are passed to :meth:`~logging.Logger.error`.
+        """
+        logger.error(msg, *args, **kwargs)
+
+    @staticmethod
+    def log_critical(msg, *args, **kwargs):
+        """Log a critical message.
+
+        All input parameters are passed to :meth:`~logging.Logger.critical`.
+        """
+        logger.critical(msg, *args, **kwargs)
 
 
 class ValidatorMatcher:
