@@ -1,3 +1,9 @@
+""" Validators:
+    simple-range (ensures all data values within the same range)
+    send-email (sends email if simple-range fails)
+    ithx-range-checker (different bounds for each type of data from iTHX sensors)
+    ithx-with-reset (resets iTHX sensor if ithx-range-checker fails too many times)
+"""
 from ..sensors import Sensor
 
 from . import Validator
@@ -18,7 +24,7 @@ from . import validator
 @validator(name='simple-range')
 class simpleRange(Validator):
     """
-    A callback that is used to validate the data. Data is a tuple of values.
+    A callback that is used to validate the data. Data is a tuple of values with the same acceptance range.
     The callback must return a value whose truthness decides whether to insert the data into the database.
     If the returned value evaluates to True then the data is inserted into the database.
     """
@@ -39,15 +45,36 @@ class simpleRange(Validator):
         self.vmax = float(vmax)
 
     def validate(self, data):
-        for v in data:
+        fields = self.sensor.fields.keys()
+        flag = True  # assume the data is okay to insert into the database
+        for f, v in zip(fields, data):
             if not (self.vmin <= v <= self.vmax):
                 self.log_warning(
-                    f'Value of {v} is out of range [{self.vmin}, {self.vmax}] for {self.sensor.record.alias}'
+                    f'{f} value of {v} is out of range [{self.vmin}, {self.vmax}] for {self.sensor.record.alias}'
                 )
-                return False
+                flag = False  # the data is not okay to insert into the database
 
-        # the data is okay, return True to insert the data into the database
-        return True
+        return flag
+
+
+@validator(name='send-email')
+class sendEmail(Validator):
+    """
+    A callback that is used to validate the data. Data is a tuple of values with the same acceptance range.
+    The callback must return a value whose truthness decides whether to insert the data into the database.
+    If the returned value evaluates to True then the data is inserted into the database. If False, then the data is
+    ignored and an email is sent with a warning message.
+    """
+    def __init__(self, sensor: Sensor, **kwargs):
+        super().__init__(sensor, **kwargs)
+
+        self.simplerange = simpleRange(sensor, **kwargs)
+
+    def validate(self, data):
+        if not self.simplerange.validate(data):
+            self.send_email(
+                body=f'Received {data} from {self.sensor.record.alias}'
+            )
 
 
 @validator(name='ithx-range-checker')  # existing code uses simple-range

@@ -7,8 +7,8 @@
     <wait>10</wait>
 
     <validators>
-        <validator tmin="10" tmax="30" hmin="10" hmax="90" dmin="0" dmax="20" reset_criterion="3">ithx-with-reset</validator>
-        <validator tmin="10" tmax="30" hmin="10" hmax="90" dmin="0" dmax="20">ithx-range-checker</validator>
+        <validator name="ithx-with-reset" tmin="10" tmax="30" hmin="10" hmax="90" dmin="0" dmax="20" reset_criterion="3"/>
+        <validator name="simple-range" vmin="10" vmax="60"/>
     </validators>
 
     <serials>
@@ -29,14 +29,5 @@
             <sheet>OMEGALoggers</sheet>
         </connection>
     </connections>
-
-    <!-- Optional: Settings for sending an email (see MSL-IO). -->
-    <smtp>
-      <settings>C:\OmegaData\email_info.txt</settings>
-      <from>rebecca.hawke</from>
-      <to>rebecca.hawke</to>
-      <!-- Can include multiple people to send the email to. -->
-      <!-- <to>greg.reid</to> -->
-    </smtp>
 
 </msl>

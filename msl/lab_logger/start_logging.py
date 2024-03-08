@@ -29,10 +29,10 @@ validators = []
 validator_element = cfg.find('validators')
 if validator_element:
     for val in validator_element:
-        name = val.text
         kwargs = val.attrib
-        validators.append(Validator.find(sensor, name, **kwargs))
-print("validators", validators)
+        # print(kwargs)
+        validators.append(Validator.find(sensor, **kwargs))
+# print("validators", validators)
 
 while True:
     try:
