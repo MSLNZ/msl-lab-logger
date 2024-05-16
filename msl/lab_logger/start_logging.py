@@ -15,6 +15,10 @@ from .log import logger
 # path, serial = sys.argv[1:]
 path = r'C:\Users\rebecca.hawke\PycharmProjects\msl-lab-logger\msl\examples\lab_logger\ithx_config.xml'
 serial = '8060940'
+# path = r'C:\Users\rebecca.hawke\PycharmProjects\msl-lab-logger\msl\examples\lab_logger\millik_config.xml'
+# serial = '411776.1'
+# path = r'C:\Users\rebecca.hawke\PycharmProjects\msl-lab-logger\msl\examples\lab_logger\vaisala_config.xml'
+# serial = 'P4040154'
 print(path, serial)
 
 cfg = Config(path)

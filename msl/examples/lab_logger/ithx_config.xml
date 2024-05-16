@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <msl>
 
-    <log_dir timeout="10">C:\Users\rebecca.hawke\Desktop\OmegaData</log_dir>
+    <log_dir timeout="10">C:\Users\rebecca.hawke\OneDrive - Callaghan Innovation\Desktop\OmegaData</log_dir>
 
     <!-- Optional: The number of seconds to wait between logging events. -->
     <wait>10</wait>

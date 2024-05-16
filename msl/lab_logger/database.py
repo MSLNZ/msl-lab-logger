@@ -1,6 +1,7 @@
 from enum import Enum
 import os
 import sqlite3
+from datetime import datetime
 from typing import Sequence
 
 from .sensors import Sensor
@@ -41,13 +42,18 @@ class Database:
             f')'
         )
         #  metadata - e.g. a place to store the equipment record for the source of the logged data
-        db.execute(f'CREATE TABLE IF NOT EXISTS metadata (field TEXT, value TEXT)')
+        db.execute(f'CREATE TABLE IF NOT EXISTS metadata (datetime DATETIME, field TEXT, value TEXT, unique (field, value))')
+        timestamp = datetime.now().replace(microsecond=0).isoformat(sep='T')
 
-        # TODO: determine the best way to represent the equipment record
-        # metadata_dict = sensor.record.to_dict()
-        # for k, v in metadata_dict.items():
-        data = ('model', sensor.record.model)
-        db.execute(f'INSERT INTO metadata VALUES (?, ?);', data)
+        metadata_dict = sensor.record.to_dict()
+        for k, v in metadata_dict.items():
+            data = (timestamp, k, str(v))
+            try:
+                db.execute(f'INSERT INTO metadata VALUES (?, ?, ?);', data)
+            except sqlite3.IntegrityError:
+                # that (field, value) pair is already in the metadata table
+                pass
+
         db.commit()
 
     def write(self, data: Sequence[float]) -> None:

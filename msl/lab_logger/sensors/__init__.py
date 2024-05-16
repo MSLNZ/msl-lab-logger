@@ -28,6 +28,7 @@ class Sensor:
     def find(config: Config, record: EquipmentRecord) -> Sensor:
         for s in _sensors:
             if s.matches(record):
+                print(s.cls, record)
                 return s.cls(config, record)
         raise ValueError(f'Cannot find sensor matching {record}')
 
@@ -85,4 +86,6 @@ def sensor(*, manufacturer: str = None, model: str = None, flags: int = 0):
 _sensors: list[SensorMatcher] = []
 
 from .ithx import iTHX
+from .milli_k import milliK
+from .vaisala_ptu300 import PTU300
 

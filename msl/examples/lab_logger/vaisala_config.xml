@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<msl>
+    <equipment alias="ptu300" manufacturer="Vaisala" model="PTU300" serial="P4040154"/>
+
+    <log_dir timeout="10">C:\Users\rebecca.hawke\OneDrive - Callaghan Innovation\Desktop</log_dir>
+
+    <!-- Optional: The number of seconds to wait between logging events. -->
+    <wait>10</wait>
+
+    <validators>
+        <validator name="simple-range" vmin="0" vmax="2000"/>
+    </validators>
+
+    <!-- Specify the Equipment-Register Databases to load equipment records from. -->
+    <registers>
+      <!--
+        The "team" attribute is used to specify which research team the Equipment-Register
+        database belongs to.
+      -->
+      <register team="Mass&amp;Pressure">
+          <path>C:\Users\rebecca.hawke\OneDrive - Callaghan Innovation\Mass Pressure\Equipment register\Equipment register.xlsx</path>
+          <!--
+            If there are multiple Sheets in the Excel database then you must specify the
+            name of the Sheet that contains the equipment records. This Excel database
+            also contains connection records (see the <connections> tag below) and so
+            the <sheet> tag must be specified.
+          -->
+          <sheet>Equipment</sheet>
+      </register>
+
+    </registers>
+
+    <!-- Specify the Connections Databases to load connection records from. -->
+    <connections>
+      <connection>
+        <path>C:\Users\rebecca.hawke\OneDrive - Callaghan Innovation\Mass Pressure\Equipment register\Equipment register.xlsx</path>
+        <!--
+          Must also specify which Sheet in this Excel database contains the connection records.
+          This "Equipment Register.xls" file also contains an "Equipment" Sheet, see the
+          <register team="P&amp;R"> element above.
+        -->
+        <sheet>CISS33653</sheet>
+      </connection>
+
+    </connections>
+
+  </msl>
