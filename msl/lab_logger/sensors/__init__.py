@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import numpy as np
 from typing import TypeVar, Sequence, TYPE_CHECKING
 
 from msl.equipment import Config
@@ -23,6 +24,10 @@ class Sensor:
     def acquire(self) -> Sequence[float]:
         raise NotImplementedError('Subclass should implement this, including'
                                   'connection = self.record.connect()')
+
+    def apply_calibration(self, data_values: np.array) -> np.array:
+        # numpy structured array with fields as names
+        raise NotImplementedError('Subclass should implement this')
 
     @staticmethod
     def find(config: Config, record: EquipmentRecord) -> Sensor:

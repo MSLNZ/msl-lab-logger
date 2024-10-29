@@ -1,4 +1,6 @@
 import re
+
+import numpy as np
 from msl.equipment import Config
 from msl.equipment import EquipmentRecord
 from . import Sensor
@@ -41,3 +43,11 @@ class iTHX(Sensor):
             'humidity': DatabaseTypes.FLOAT,
             'dewpoint': DatabaseTypes.FLOAT,
         }
+
+    def apply_calibration(self, data_values: np.array) -> np.array:
+        # numpy structured array with fields as names
+        # also needs to include datetime for readings
+        # calibration information comes from the equipment record; we know here it's an equation
+        # get appropriate equation for equipment id, measurand, component, date, value
+
+        pass

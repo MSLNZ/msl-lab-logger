@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <msl>
 
-    <log_dir timeout="10">C:\Users\rebecca.hawke\OneDrive - Callaghan Innovation\Desktop\OmegaData</log_dir>
+    <log_dir timeout="10">C:\Users\r.hawke\OneDrive - Callaghan Innovation\Desktop\OmegaData</log_dir>
 
     <!-- Optional: The number of seconds to wait between logging events. -->
     <wait>10</wait>
 
     <validators>
         <validator name="ithx-with-reset" tmin="10" tmax="30" hmin="10" hmax="90" dmin="0" dmax="20" reset_criterion="3"/>
-        <validator name="simple-range" vmin="10" vmax="60"/>
+        <validator name="simple-range" vmin="0" vmax="60"/>
     </validators>
 
     <serials>

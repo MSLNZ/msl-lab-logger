@@ -1,0 +1,45 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "msl-lab-logger"
+dynamic = ["version"]
+description = "Write a short description about msl-lab-logger here"
+readme = "README.rst"
+license = "MIT"
+classifiers = []
+dependencies = [
+    "msl-equipment @ https://github.com/MSLNZ/msl-equipment/archive/main.tar.gz",
+]
+
+[[project.authors]]
+name = "Measurement Standards Laboratory of New Zealand"
+email = "info@measurement.govt.nz"
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "sphinx",
+    "sphinx-rtd-theme",
+]
+docs = [
+    "sphinx",
+    "sphinx-rtd-theme",
+]
+tests = [
+    "pytest",
+    "pytest-cov",
+]
+
+[project.urls]
+Homepage = "https://github.com/MSLNZ/msl-lab-logger"
+
+[tool.hatch.version]
+path = "msl/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/msl",
+]
